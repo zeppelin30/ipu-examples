@@ -1,0 +1,12 @@
+all: ipu-examples
+
+ipu-examples: alphablending1.c
+	$(CC) -g -O0 -o alphablending1 alphablending1.c -I @prefix@/usr/src/kernel/include/uapi/ \
+	-I @prefix@/usr/src/kernel/include/
+
+clean:
+	-rm alphablending1
+
+.PHONY: all clean
+
+	
