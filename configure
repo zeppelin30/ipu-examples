@@ -1679,7 +1679,7 @@ else
 fi
 
 
-ac_config_files="$ac_config_files Makefile mx5/framebuffer/example1/Makefile mx5/rotation/example1/Makefile mx6/alphablending/example1/Makefile mx6/alphablending/example2/Makefile mx6/cropping/example1/Makefile mx6/csc/example1/Makefile mx6/deinterlacing/example1/Makefile mx6/resizing/example1/Makefile mx6/rotation/example1/Makefile mx6/framebuffer/example1/Makefile mx6/framebuffer/example2/Makefile"
+ac_config_files="$ac_config_files Makefile mx5/framebuffer/example1/Makefile mx5/rotation/example1/Makefile mx6/alphablending/example1/Makefile mx6/alphablending/example2/Makefile mx6/cropping/example1/Makefile mx6/csc/example1/Makefile mx6/deinterlacing/example1/Makefile mx6/resizing/example1/Makefile mx6/rotation/example1/Makefile mx6/framebuffer/example1/Makefile mx6/framebuffer/example2/Makefile mx6/utils/alpha/Makefile mx6/utils/position/Makefile"
 
 
 if test "x$target" = "x"; then
@@ -2426,6 +2426,8 @@ do
     "mx6/rotation/example1/Makefile") CONFIG_FILES="$CONFIG_FILES mx6/rotation/example1/Makefile" ;;
     "mx6/framebuffer/example1/Makefile") CONFIG_FILES="$CONFIG_FILES mx6/framebuffer/example1/Makefile" ;;
     "mx6/framebuffer/example2/Makefile") CONFIG_FILES="$CONFIG_FILES mx6/framebuffer/example2/Makefile" ;;
+    "mx6/utils/alpha/Makefile") CONFIG_FILES="$CONFIG_FILES mx6/utils/alpha/Makefile" ;;
+    "mx6/utils/position/Makefile") CONFIG_FILES="$CONFIG_FILES mx6/utils/position/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

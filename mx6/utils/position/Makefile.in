@@ -1,0 +1,12 @@
+all: ipu-examples
+
+ipu-examples: position.c
+	$(CC) -g -O0 -o position position.c -I @prefix@/usr/src/kernel/include/uapi/ \
+	-I @prefix@/usr/src/kernel/include/
+
+clean:
+	-rm position
+
+.PHONY: all clean
+
+	
