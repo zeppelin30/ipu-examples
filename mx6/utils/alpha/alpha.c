@@ -16,6 +16,29 @@
 #define MAX_ALPHA 255
 #define NUM_FB 4
 
+static int print_fbinfo(struct fb_var_screeninfo fb) {
+    printf("\nFB information \n");
+    printf("xres = %d\n",  fb.xres);
+    printf("xres_virtual = %d\n",  fb.xres_virtual);
+    printf("yres = %d\n",  fb.yres);
+    printf("yres_virtual = %d\n",  fb.yres_virtual);
+    printf("bits_per_pixel = %d\n",  fb.bits_per_pixel);
+    printf("pixclock = %d\n",  fb.pixclock);
+    printf("height = %d\n",  fb.height);
+    printf("width = %d\n",  fb.width);
+    printf("Pixel format : RGBX_%d%d%d%d\n",fb.red.length,
+                                                 fb.green.length,
+                                                 fb.blue.length,
+                                                 fb.transp.length);
+    printf(" Begin of bitfields(Byte ordering):-\n");
+    printf("  Red    : %d\n",fb.red.offset);
+    printf("  Blue   : %d\n",fb.blue.offset);
+    printf("  Green  : %d\n",fb.green.offset);
+    printf("  Transp : %d\n",fb.transp.offset);
+
+    return 0;
+}
+
 int main (int argc, char *argv[])
 {
     struct fb_var_screeninfo fb0_var;
@@ -24,15 +47,13 @@ int main (int argc, char *argv[])
     struct mxcfb_gbl_alpha g_alpha;
     char fb_name[]="/dev/fb";
 
-    if (argc < 3)
-    {
+    if (argc < 3) {
         printf(" alhpa [fb #] [0 - 255] - 0: transparent \n");
         printf(" ex,) alhpa 1 100\n");
         exit(-1);
     }
 
-    if (atoi(argv[1]) < 0 || atoi(argv[1]) > NUM_FB)
-    {
+    if (atoi(argv[1]) < 0 || atoi(argv[1]) > NUM_FB) {
         printf(" Wrong number of framebuffer /dev/fb%d\n",atoi(argv[1]) );
         exit(-1);
     }
@@ -58,25 +79,7 @@ int main (int argc, char *argv[])
         goto done;
     }
 
-    printf("\nFB information \n");
-    printf("xres = %d\n",  fb0_var.xres);
-    printf("xres_virtual = %d\n",  fb0_var.xres_virtual);
-    printf("yres = %d\n",  fb0_var.yres);
-    printf("yres_virtual = %d\n",  fb0_var.yres_virtual);
-    printf("bits_per_pixel = %d\n",  fb0_var.bits_per_pixel);
-    printf("pixclock = %d\n",  fb0_var.pixclock);
-    printf("height = %d\n",  fb0_var.height);
-    printf("width = %d\n",  fb0_var.width);
-    printf("Pixel format : RGBX_%d%d%d%d\n",fb0_var.red.length,
-                                                 fb0_var.green.length,
-                                                 fb0_var.blue.length,
-                                                 fb0_var.transp.length);
-    printf(" Begin of bitfields(Byte ordering):-\n");
-    printf("  Red    : %d\n",fb0_var.red.offset);
-    printf("  Blue   : %d\n",fb0_var.blue.offset);
-    printf("  Green  : %d\n",fb0_var.green.offset);
-    printf("  Transp : %d\n",fb0_var.transp.offset);
-
+    print_fbinfo(fb0_var);
 
     /* Enable global alpha */
     g_alpha.alpha = atoi(argv[2]);
