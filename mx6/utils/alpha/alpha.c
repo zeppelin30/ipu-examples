@@ -16,7 +16,7 @@
 #define MAX_ALPHA 255
 #define NUM_FB 4
 
-static int print_fbinfo(struct fb_var_screeninfo fb) {
+static int print_fbinfo (struct fb_var_screeninfo fb) {
     printf("\nFB information \n");
     printf("xres = %d\n",  fb.xres);
     printf("xres_virtual = %d\n",  fb.xres_virtual);
@@ -34,31 +34,50 @@ static int print_fbinfo(struct fb_var_screeninfo fb) {
     printf("  Red    : %d\n",fb.red.offset);
     printf("  Blue   : %d\n",fb.blue.offset);
     printf("  Green  : %d\n",fb.green.offset);
-    printf("  Transp : %d\n",fb.transp.offset);
+    printf("  Transp : %d\n\n",fb.transp.offset);
 
     return 0;
 }
 
-int main (int argc, char *argv[])
-{
+static int print_usage (void) {
+    printf("\nalpha [option] [fb #] [value]\n");
+    printf("[option] alpha \t\t [0-255] - 0:transparent \n");
+    printf("            colorkey \t\t colorkey value\n");
+    printf("ex) alpha alpha 1 100\n");
+    printf("     alpha colorkey 1 on 100\n");
+    printf("     alpha colorkey 1 off\n\n");
+
+    return 0;
+}
+
+int main (int argc, char *argv[]) {
     struct fb_var_screeninfo fb0_var;
     struct fb_fix_screeninfo fb0_fix;
     int fd_fb0;
     struct mxcfb_gbl_alpha g_alpha;
+    struct mxcfb_color_key ckey;
     char fb_name[]="/dev/fb";
+    char option[64];
 
     if (argc < 3) {
-        printf(" alhpa [fb #] [0 - 255] - 0: transparent \n");
-        printf(" ex,) alhpa 1 100\n");
+        print_usage();
         exit(-1);
     }
 
-    if (atoi(argv[1]) < 0 || atoi(argv[1]) > NUM_FB) {
-        printf(" Wrong number of framebuffer /dev/fb%d\n",atoi(argv[1]) );
+    strcpy(option,argv[1]);
+
+    /*check option*/
+    if ( !(strcmp(option,"alpha") )&& !(strcmp(option,"colorkey") ) ){
+        printf("Unsupported option:%s\n", option);
+        exit(-1);
+    }
+    /*check framebuffer number*/
+    if (atoi(argv[2]) < 0 || atoi(argv[2]) > NUM_FB) {
+        print_usage();
         exit(-1);
     }
 
-    strcat(fb_name, argv[1]);
+    strcat(fb_name, argv[2]);
 
     printf("Opening %s\n",fb_name);
     // Open Framebuffer and gets its address
@@ -81,19 +100,58 @@ int main (int argc, char *argv[])
 
     print_fbinfo(fb0_var);
 
-    /* Enable global alpha */
-    g_alpha.alpha = atoi(argv[2]);
-    g_alpha.enable = 1;
+    if(!strcmp(option, "alpha") ) {
+        /* Enable global alpha */
+        if(! argv[3]) {
+            printf("Invalid alpha value\n");
+            close(fd_fb0);
+            goto done;
+        }
+        g_alpha.alpha = atoi(argv[3]);
+        g_alpha.enable = 1;
 
-    if( g_alpha.alpha > MAX_ALPHA)
-        g_alpha.alpha = MAX_ALPHA;
-    else if( g_alpha.alpha < 0)
-        g_alpha.alpha = 0;
-    
-    if (ioctl(fd_fb0, MXCFB_SET_GBL_ALPHA, &g_alpha) < 0) {
-        printf("Set global alpha failed\n");
-        close(fd_fb0);
-        goto done;
+        if( g_alpha.alpha > MAX_ALPHA)
+            g_alpha.alpha = MAX_ALPHA;
+        else if( g_alpha.alpha < 0)
+            g_alpha.alpha = 0;
+        printf("Global alpha changed as %d\n", g_alpha.alpha);
+
+        if (ioctl(fd_fb0, MXCFB_SET_GBL_ALPHA, &g_alpha) < 0) {
+            printf("Set global alpha failed\n");
+            close(fd_fb0);
+            goto done;
+        }
+    }
+    else if(!strcmp(option, "colorkey") ) {
+        if (!strcmp(argv[3], "on") ) {
+            ckey.enable = 1;
+            if ((argv[4])) {
+                ckey.color_key = atoi(argv[4]);
+                printf("Colorkey: %d\n", ckey.color_key);
+            }
+            else {
+                printf("Need colorkey value\n");
+                close(fd_fb0);
+                goto done;
+            }
+
+        }
+        else if (!strcmp(argv[3], "off") ) {
+            ckey.enable = 0;
+            ckey.color_key = 0x0;
+        }
+        else {
+            print_usage();
+            close(fd_fb0);
+            goto done;
+        }
+        /* Enable/Disalbe color key  */
+        printf("Color key enabled:%d\n", ckey.enable);
+        if (ioctl(fd_fb0,MXCFB_SET_CLR_KEY,&ckey) < 0) {
+            printf( "MXCFB_SET_CLR_KEY failed ");
+            close(fd_fb0);
+            goto done;
+        }
     }
 
     close(fd_fb0);
