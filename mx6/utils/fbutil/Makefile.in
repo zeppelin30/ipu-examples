@@ -1,0 +1,12 @@
+all: ipu-examples
+
+ipu-examples: fbutil.c
+	$(CC) -g -O0 -o fbutil fbutil.c -I @prefix@/usr/src/kernel/include/uapi/ \
+	-I @prefix@/usr/src/kernel/include/
+
+clean:
+	-rm fbutil
+
+.PHONY: all clean
+
+	

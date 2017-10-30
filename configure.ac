@@ -16,7 +16,7 @@ AC_CONFIG_FILES([Makefile
                 mx6/deinterlacing/example1/Makefile
                 mx6/resizing/example1/Makefile
                 mx6/rotation/example1/Makefile
-                mx6/utils/alpha/Makefile
+                mx6/utils/fbutil/Makefile
                 mx6/utils/position/Makefile
                 mx6/utils/alphablending1/Makefile
 		mx6/framebuffer/example1/Makefile])

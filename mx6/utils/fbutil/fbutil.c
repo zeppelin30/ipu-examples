@@ -40,12 +40,12 @@ static int print_fbinfo (struct fb_var_screeninfo fb) {
 }
 
 static int print_usage (void) {
-    printf("\nalpha [option] [fb #] [value]\n");
-    printf("[option] alpha \t\t [0-255] - 0:transparent \n");
+    printf("\nfbutil [option] [fb #] [value]\n");
+    printf("[option] fbutil \t\t [0-255] - 0:transparent \n");
     printf("            colorkey \t\t colorkey value\n");
-    printf("ex) alpha alpha 1 100\n");
-    printf("     alpha colorkey 1 on 100\n");
-    printf("     alpha colorkey 1 off\n\n");
+    printf("ex) fbutil alpha 1 100\n");
+    printf("    fbutil colorkey 1 on 100\n");
+    printf("    fbutil colorkey 1 off\n\n");
 
     return 0;
 }
