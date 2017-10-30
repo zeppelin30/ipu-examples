@@ -14,18 +14,35 @@
 #include <linux/ipu.h>
 
 #define MAX_ALPHA 255
+#define NUM_FB 4
 
 int main (int argc, char *argv[])
 {
     struct fb_var_screeninfo fb0_var;
     struct fb_fix_screeninfo fb0_fix;
     int fd_fb0;
-
     struct mxcfb_gbl_alpha g_alpha;
+    char fb_name[]="/dev/fb";
 
+    if (argc < 3)
+    {
+        printf(" alhpa [fb #] [0 - 255] - 0: transparent \n");
+        printf(" ex,) alhpa 1 100\n");
+        exit(-1);
+    }
+
+    if (atoi(argv[1]) < 0 || atoi(argv[1]) > NUM_FB)
+    {
+        printf(" Wrong number of framebuffer /dev/fb%d\n",atoi(argv[1]) );
+        exit(-1);
+    }
+
+    strcat(fb_name, argv[1]);
+
+    printf("Opening %s\n",fb_name);
     // Open Framebuffer and gets its address
-    if ((fd_fb0 = open("/dev/fb1", O_RDWR, 0)) < 0) {
-        printf("Unable to open /dev/fb1\n");
+    if ((fd_fb0 = open(fb_name, O_RDWR, 0)) < 0) {
+        printf("Unable to open %s\n",fb_name);
         goto done;
     }
 
@@ -60,16 +77,15 @@ int main (int argc, char *argv[])
     printf("  Green  : %d\n",fb0_var.green.offset);
     printf("  Transp : %d\n",fb0_var.transp.offset);
 
-    if (argc < 2)
-    {
-        printf(" Put alpha value as argument [0 - 255] - 0: transparent \n");
-        exit(-1);
-    }
+
     /* Enable global alpha */
-    g_alpha.alpha = atoi(argv[1]);
+    g_alpha.alpha = atoi(argv[2]);
     g_alpha.enable = 1;
 
-    if( g_alpha.alpha > MAX_ALPHA) g_alpha.alpha = MAX_ALPHA;
+    if( g_alpha.alpha > MAX_ALPHA)
+        g_alpha.alpha = MAX_ALPHA;
+    else if( g_alpha.alpha < 0)
+        g_alpha.alpha = 0;
     
     if (ioctl(fd_fb0, MXCFB_SET_GBL_ALPHA, &g_alpha) < 0) {
         printf("Set global alpha failed\n");
